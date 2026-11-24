@@ -1,0 +1,73 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose.yml — Video Captioning Project
+# Services:  1. notebook  (Jupyter Lab + GPU)
+#            2. mlflow    (experiment tracking UI)
+# Usage:     docker-compose up --build
+# ─────────────────────────────────────────────────────────────────────────────
+version: "3.9"
+
+services:
+
+  # ── Jupyter Lab (runs all notebooks) ───────────────────────────────────────
+  notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: video-captioning:latest
+    container_name: video_captioning_notebook
+    runtime: nvidia                    # requires nvidia-container-toolkit
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - TRANSFORMERS_CACHE=/workspace/.cache/huggingface
+      - HF_HOME=/workspace/.cache/huggingface
+    volumes:
+      - .:/workspace                   # mount project root
+      - hf_cache:/workspace/.cache/huggingface
+      - video_data:/workspace/videos
+    ports:
+      - "8888:8888"                    # Jupyter Lab
+    depends_on:
+      - mlflow
+    networks:
+      - captioning_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: >
+      jupyter lab
+      --ip=0.0.0.0 --port=8888 --no-browser
+      --allow-root
+      --NotebookApp.token=''
+      --NotebookApp.password=''
+
+  # ── MLflow tracking server ──────────────────────────────────────────────────
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.11.1
+    container_name: video_captioning_mlflow
+    ports:
+      - "5000:5000"                    # MLflow UI
+    volumes:
+      - mlruns:/mlruns
+    networks:
+      - captioning_net
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri /mlruns
+      --default-artifact-root /mlruns
+
+volumes:
+  hf_cache:     # persists HuggingFace model weights across container restarts
+  video_data:   # persists downloaded videos
+  mlruns:       # persists MLflow experiment logs
+
+networks:
+  captioning_net:
+    driver: bridge

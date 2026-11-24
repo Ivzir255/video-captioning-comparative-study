@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# requirements.txt — Video Captioning Project
+# Pinned for reproducibility (Spring 2026)
+# Note: torch, torchvision, torchaudio installed separately via CUDA wheel
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Core ML / HuggingFace ─────────────────────────────────────────────────────
+transformers==4.40.2
+accelerate==0.29.3
+bitsandbytes==0.43.1
+sentencepiece==0.2.0
+protobuf==4.25.3
+einops==0.7.0
+safetensors==0.4.3
+peft==0.10.0
+
+# ── Vision / Video ────────────────────────────────────────────────────────────
+decord==0.6.0
+opencv-python-headless==4.9.0.80
+Pillow==10.3.0
+av==12.0.0
+imageio==2.34.1
+imageio-ffmpeg==0.4.9
+
+# ── NLP / Evaluation ─────────────────────────────────────────────────────────
+nltk==3.8.1
+rouge-score==0.1.2
+pycocoevalcap==1.2
+pycocotools==2.0.7
+ftfy==6.2.0
+regex==2024.4.16
+
+# ── Data science / Plotting ───────────────────────────────────────────────────
+numpy==1.26.4
+pandas==2.2.2
+matplotlib==3.8.4
+seaborn==0.13.2
+scipy==1.13.0
+scikit-learn==1.4.2
+
+# ── Experiment tracking (MLOps) ───────────────────────────────────────────────
+mlflow==2.11.1
+dagshub==0.3.26
+
+# ── Notebook / Dev ────────────────────────────────────────────────────────────
+jupyterlab==4.1.6
+ipywidgets==8.1.2
+tqdm==4.66.2
+ipython==8.24.0
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+requests==2.31.0
+yt-dlp==2024.4.9
+psutil==5.9.8

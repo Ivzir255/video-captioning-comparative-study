@@ -1,0 +1,200 @@
+================================================================================
+PROMPT ENGINEERING RECORD
+Project: Comparative Analysis of Multimodal Transformer Architectures
+         for Automatic Video Captioning
+Course:  Generative AI | FAST NUCES Islamabad | Spring 2026
+================================================================================
+
+This file documents all prompts used with Generative AI tools (Claude, GPT-4)
+during the development of this project, as required by the course rubric.
+Prompts are organised by task category.
+
+================================================================================
+CATEGORY 1 — PROJECT SCOPING & TOPIC SELECTION
+================================================================================
+
+Prompt 1.1 (Topic refinement):
+"I want to do a Generative AI project on video captioning using multimodal
+transformers. What angle would you suggest — comparative analysis, novel
+approach, domain-specific, or multilingual? Recommend based on feasibility
+within a 10-day timeline and the requirement for at least 8-10 cited papers."
+
+Prompt 1.2 (Model selection):
+"For a comparative study of video captioning models, suggest which models
+to include covering contrastive, Q-Former, and LLM-based paradigms. Include
+justification for each. Should I include ViViT, VideoBERT, LLaVA, and LLaMA?"
+
+Prompt 1.3 (Dataset selection):
+"Which datasets should I use for video captioning comparative analysis?
+Help me choose between MSR-VTT, MSVD, ActivityNet Captions, and YouCook2,
+considering benchmark value, size, and evaluation metric compatibility."
+
+================================================================================
+CATEGORY 2 — LITERATURE REVIEW
+================================================================================
+
+Prompt 2.1 (Paper search):
+"Find 10-12 recent papers (2021-2024) directly relevant to video captioning
+using multimodal transformers. For each, give the title, venue, year, and
+a two-sentence description of its contribution."
+
+Prompt 2.2 (BibTeX generation):
+"Generate a properly formatted BibTeX file for these papers: VideoBERT,
+CLIP, ViViT, CLIP4Caption, BLIP-2, LLaVA, Video-LLaMA, Vid2Seq, MSR-VTT
+benchmark paper, and the BLEU metric paper. Use correct venues and years."
+
+Prompt 2.3 (Related work synthesis):
+"Write a related work section (approximately 400 words) in LNCS style for
+a comparative video captioning paper. Organise the survey into three
+paragraphs: early sequence-to-sequence methods, transformer-based VLMs,
+and instruction-tuned LLM approaches."
+
+================================================================================
+CATEGORY 3 — SYSTEM DESIGN & ARCHITECTURE
+================================================================================
+
+Prompt 3.1 (Pipeline design):
+"Design a shared preprocessing pipeline for comparing 7 video captioning
+models (CLIP+GPT-2, ViViT+GPT-2, BLIP-2, CLIP4Caption, LLaVA-NeXT,
+Video-LLaMA-2, Vid2Seq) on MSVD and MSR-VTT. What shared components
+are needed to ensure fair comparison?"
+
+Prompt 3.2 (Evaluation harness):
+"Write a Python CaptionEvaluator class using pycocoevalcap that computes
+BLEU-1, BLEU-4, METEOR, CIDEr, and ROUGE-L. It should accept video IDs,
+hypotheses, and reference lists, and return a scores dict."
+
+Prompt 3.3 (Artifact saving strategy):
+"Design a complete artifact-saving strategy for a comparative ML project
+where 4 team members run separate notebooks in parallel. What files should
+each member save to ensure a downstream analysis notebook never requires
+reruns? Include per-video scores, timing, hypotheses, and references."
+
+Prompt 3.4 (Team distribution):
+"Restructure three video captioning notebooks into a system where work
+can be distributed among team members with no result comparison sections,
+ensuring each member's notebook is independent and saves all intermediate
+artifacts needed for later comparative analysis."
+
+================================================================================
+CATEGORY 4 — MODEL IMPLEMENTATION
+================================================================================
+
+Prompt 4.1 (CLIP+GPT-2):
+"Implement a CLIP+GPT-2 video captioner in PyTorch. CLIP ViT-B/32 encodes
+frames; a learned linear projection maps the mean-pooled embedding to a
+GPT-2 soft prefix; GPT-2 generates the caption. Both CLIP and GPT-2 should
+be frozen. Include a __call__ method that accepts a list of PIL frames."
+
+Prompt 4.2 (ViViT+GPT-2):
+"Implement a ViViT+GPT-2 captioner that is architecturally identical to
+CLIP+GPT-2 except it uses google/vivit-b-16x2-kinetics400 as the visual
+encoder. The decoder and projection should be identical to allow clean
+encoder ablation comparison."
+
+Prompt 4.3 (BLIP-2):
+"Implement a BLIP-2 video captioner using Salesforce/blip2-opt-2.7b from
+HuggingFace. Load in float16 for GPU efficiency. Use the middle frame as
+representative visual input and prompt with a VQA-style question."
+
+Prompt 4.4 (CLIP4Caption):
+"Implement a CLIP4Caption-style captioner that extends CLIP+GPT-2 with:
+(1) temporal attention pooling — learned scalar weights per frame replacing
+mean-pool, and (2) VTM re-ranking — generate N beam candidates and re-rank
+by CLIP cosine similarity to the video embedding."
+
+Prompt 4.5 (LLaVA-NeXT):
+"Implement a LLaVA-NeXT-Video-7B captioner using llava-hf/LLaVA-NeXT-Video-7B-hf.
+Support both fp16 and 4-bit NF4 quantisation (auto-selected by VRAM).
+Use a natural language instruction prompt for caption generation."
+
+Prompt 4.6 (Video-LLaMA-2):
+"Implement a Video-LLaMA-2 captioner using DAMO-NLP-SG/VideoLLaMA2-7B.
+Include a graceful fallback to AutoModelForCausalLM if the dedicated class
+is not available. Handle both processor-based and tokenizer-based inference."
+
+Prompt 4.7 (Vid2Seq):
+"Implement a Vid2Seq-style dense video captioner using T5-base with 100
+extended time tokens <time_0> through <time_99>. CLIP ViT-B/32 provides
+the visual prefix. Implement both a standard single-caption __call__ method
+(stripping time tokens) and a get_dense_captions() method returning
+(timestamp_bin, text) pairs."
+
+================================================================================
+CATEGORY 5 — INFRASTRUCTURE & MLOPS
+================================================================================
+
+Prompt 5.1 (Docker):
+"Write a GPU-enabled Dockerfile for a video captioning research project.
+Base image: nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04. Install Python
+3.10, PyTorch with CUDA 11.8, and all project dependencies. Expose ports
+for Jupyter Lab (8888) and MLflow (5000)."
+
+Prompt 5.2 (Docker Compose):
+"Write a docker-compose.yml with two services: (1) a Jupyter Lab notebook
+service with GPU access and HuggingFace model cache volume, and (2) an
+MLflow tracking server service. Both should share a network. Include
+environment variables for MLFLOW_TRACKING_URI and HF_HOME."
+
+Prompt 5.3 (MLflow tracking):
+"Write an mlflow_utils.py module with functions: start_run() context manager,
+log_eval_results() for logging metrics and timing, log_ablation() for logging
+ablation studies as nested runs, and log_figure() for artifact logging."
+
+Prompt 5.4 (Requirements):
+"Generate a requirements.txt with pinned versions for a video captioning
+project using: transformers, accelerate, bitsandbytes, decord, opencv,
+pycocoevalcap, mlflow, and jupyterlab. Pin all versions for reproducibility."
+
+================================================================================
+CATEGORY 6 — ANALYSIS & PAPER WRITING
+================================================================================
+
+Prompt 6.1 (Statistical analysis):
+"Write code to perform Wilcoxon signed-rank tests on per-video CIDEr scores
+between all pairs of video captioning models. Build an N×N p-value matrix
+and identify statistically significant pairs at α=0.05."
+
+Prompt 6.2 (Failure taxonomy):
+"Write a classify_failure() function that categorises a generated video
+caption into one of: correct, missing action, too short, hallucination,
+partial match, or empty/generic — using simple heuristics comparing the
+hypothesis to the reference caption."
+
+Prompt 6.3 (LaTeX table generator):
+"Write a Python function to_latex(df, caption, label) that converts a
+pandas DataFrame to a publication-quality LaTeX booktabs table for an
+LNCS paper. Bold the best value per column."
+
+Prompt 6.4 (LNCS paper writing):
+"Write the Introduction section of an LNCS-format research paper on
+comparative video captioning. Include: motivation, the three-generation
+narrative (RNNs → transformers → LLMs), a gap statement, and a final
+paragraph on paper organisation. Target ~400 words."
+
+Prompt 6.5 (Methodology section):
+"Write the Methodology section for a comparative video captioning paper
+covering 7 models organised into 3 paradigms: contrastive, Q-Former, and
+instruction-tuned LLM. Include a unified pipeline diagram description,
+one subsection per paradigm, and a datasets subsection."
+
+================================================================================
+CATEGORY 7 — PROMPT ENGINEERING TECHNIQUES DEMONSTRATED
+================================================================================
+
+Techniques used in this project:
+
+1. Role assignment: "Act as a senior ML engineer reviewing..."
+2. Structured output: "Respond only in JSON with keys: model, scores, timing"
+3. Chain-of-thought: "Step by step, explain why BLIP-2 uses a Q-Former..."
+4. Constraint specification: "In Python, using only frozen pretrained weights..."
+5. Few-shot examples: "Given this model class (example), write a similar one for..."
+6. Iterative refinement: Multiple rounds of "improve the docstring to include..."
+7. Task decomposition: Breaking the full project into 6 categories above
+8. Format control: "Write this in LaTeX using the LNCS booktabs table format"
+9. Context provision: Providing rubric items before requesting code/text
+10. Negative examples: "Do not use nn.DataParallel; do not use forward() for inference"
+
+================================================================================
+END OF PROMPTS FILE
+================================================================================
